@@ -96,7 +96,7 @@ export const readExcelData = async (filename: string) => {
         ...item.slice(1).reduce(
           (map, val, index) => ({
             ...map,
-            [headers[index + 1]]: val,
+            [headers[index + 1]]: val.trim(),
           }),
           {}
         ),
