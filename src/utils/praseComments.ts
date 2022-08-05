@@ -2,8 +2,8 @@ import { types as t } from '@babel/core';
 
 const scopeRegexp = /@message\.scope(?:[\t\x20])+([\w-]+)/;
 
-const praseCommments = (
-  leadingComments: readonly t.Comment[] | null
+const praseComments = (
+  leadingComments: t.Comment[] | null | undefined
 ): null | {
   scope: string | undefined;
   messages: Record<string, string> | undefined;
@@ -54,4 +54,4 @@ const praseCommments = (
   };
 };
 
-export default praseCommments;
+export default praseComments;

@@ -3,7 +3,7 @@ import { CallExpression, JSXOpeningElement } from '@babel/types';
 import { codeFrameColumns } from '@babel/code-frame';
 import genId from './utils/id';
 import { cloneJSXOpeningElement, cloneNormalCallExpression } from './utils/ast';
-import praseCommments from './utils/praseComments';
+import praseComments from './utils/praseComments';
 import { MessageDescriptor, PluginOptions } from './types';
 import { CalleeFunctionNames, ComponentNames, ShortcutFunctionName } from './config';
 
@@ -68,7 +68,7 @@ function createFunctionMessageDescriptor(
   let msgProp: t.ObjectProperty | null = null;
   let hasQuery = false;
 
-  const translatedMessage = praseCommments(node.leadingComments);
+  const translatedMessage = praseComments(node.leadingComments);
 
   if (
     t.isIdentifier(node.callee) &&
@@ -201,7 +201,7 @@ function run(
 
   return {
     pre() {
-      if (storage) {
+      if (storage && this.filename) {
         storage.set(this.filename, new Map());
       }
     },
@@ -210,7 +210,7 @@ function run(
         const { name } = path.node;
         const { filename } = file;
 
-        if (t.isJSXIdentifier(name) && componentNames.includes(name.name)) {
+        if (filename && t.isJSXIdentifier(name) && componentNames.includes(name.name)) {
           const descriptor = createJSXMessageDescriptor(
             path,
             writeMode,
@@ -238,6 +238,10 @@ function run(
       CallExpression(path, file) {
         const { callee } = path.node;
         const { filename } = file;
+
+        if (!filename) {
+          return;
+        }
 
         if (
           (t.isIdentifier(callee) && functionNames.includes(callee.name)) ||
